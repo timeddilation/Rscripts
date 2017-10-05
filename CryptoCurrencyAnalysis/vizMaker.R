@@ -6,14 +6,17 @@ library(quantmod)
 
 rm(bitcoin, ethereum, neo, litecoin, coins, coins2016)
 
+# Make sure to set your working dir to this file's location
+# Session -> Set Wroking Directory -> To Source File Location
+
 bitcoin <-
-  fread("cyptos/cryptocurrencypricehistory/bitcoin_price.csv")
+  fread("cryptocurrencypricehistory/bitcoin_price.csv")
 ethereum <-
-  fread("cyptos/cryptocurrencypricehistory/ethereum_price.csv")
+  fread("cryptocurrencypricehistory/ethereum_price.csv")
 neo <-
-  fread("cyptos/cryptocurrencypricehistory/neo_price.csv")
+  fread("cryptocurrencypricehistory/neo_price.csv")
 litecoin <-
-  fread("cyptos/cryptocurrencypricehistory/litecoin_price.csv")
+  fread("cryptocurrencypricehistory/litecoin_price.csv")
 
 # bitcoin[, Date := as.Date(Date, format="%b %d, %Y")]
 # ggplot(bitcoin, aes(Date, Close)) + geom_point()
@@ -22,11 +25,6 @@ bitcoin[, currency := "bitcoin"]
 ethereum[, currency := "ethereum"]
 neo[, currency := "neo"]
 litecoin[, currency := "litecoin"]
-
-bitcoin[, scaled := scale(bitcoin$Close)]
-ethereum[, scaled := scale(ethereum$Close)]
-neo[, scaled := scale(neo$Close)]
-litecoin[, scaled := scale(litecoin$Close)]
 
 coins <- rbind(bitcoin, ethereum, neo, litecoin)
 
