@@ -54,13 +54,13 @@ coins[, Date := as.Date(Date, format="%b %d, %Y")]
 
 ggplot(coins2017, aes(Date, Close, color = currency)) +
   geom_line()
-ggplot(coins2017, aes(Date, scaled, color = currency)) +
+ggplot(coins2017, aes(Date, Scaled, color = currency)) +
   geom_smooth() +
   geom_line()
 ggplot(coins2017, aes(Date, MClose, color = currency)) +
   geom_smooth() +
   geom_line()
-ggplot(coins2017, aes(DateMY, AvgVolMY, color = currency)) +
+ggplot(coins2017, aes(MonthYear, AvgMntYrVolume, color = currency)) +
   geom_bar(stat="identity")
-ggplot(coins2017, aes(DateMY, VolumeInt, color = currency)) +
+ggplot(coins2017, aes(MonthYear, Volume, color = currency)) +
   geom_bar(data=subset(coins2017, currency=="bitcoin"), stat="identity")
