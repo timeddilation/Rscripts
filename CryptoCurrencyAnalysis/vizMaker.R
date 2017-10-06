@@ -43,3 +43,13 @@ ggplot(coins, aes(Date, MClose, color = currency)) +
 ggplot(coins, aes(Date, scaled, color = currency)) +
   geom_smooth() +
   geom_line()
+
+coins[, Date := as.Date(Date, format="%Y %m, %d")]
+coins2017 <- subset(coins, Date > as.Date("2017/01/01"))
+coins[, Date := as.Date(Date, format="%b %d, %Y")]
+
+ggplot(coins2017, aes(Date, Close, color = currency)) +
+  geom_line()
+ggplot(coins2017, aes(Date, scaled, color = currency)) +
+  geom_smooth() +
+  geom_line()
