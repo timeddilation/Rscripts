@@ -23,6 +23,16 @@ coins <- rbind(bitcoin, litecoin, ethereum)
 rm(bitcoin, litecoin, ethereum)
 coins <- coins[, ScaledPrice := scale(Price), by = Currency]
 coins <- coins[, MPrice := Price / max(Price), by = Currency]
+coins <- coins[, WeekDay := weekdays(as.POSIXct(Timestamp, origin="1970-01-01"))]
+coins$WeekDay <- factor(coins$WeekDay, levels= c("Sunday", "Monday", "Tuesday", 
+                                                 "Wednesday", "Thursday", "Friday", "Saturday"))
+agrCoinsPre1 <- coins[Timestamp >= lastTradeWeek]
+agrCoinsPre2 <- aggregate(agrCoinsPre1[, 2:3], list(Currency = agrCoinsPre1$Currency, WeekDay = agrCoinsPre1$WeekDay), mean)
+names(agrCoinsPre2) <- c("Currency", "WeekDay", "MeanPrice", "MeanVolume")
+agrCoinsPre3 <- aggregate(agrCoinsPre1[, 2:3], list(Currency = agrCoinsPre1$Currency, WeekDay = agrCoinsPre1$WeekDay), sd)
+names(agrCoinsPre3) <- c("Currency", "WeekDay", "SdPrice", "SdVolume")
+agrCoins <- merge(agrCoinsPre2, agrCoinsPre3, by = c("Currency", "WeekDay"))
+rm(agrCoinsPre1, agrCoinsPre2, agrCoinsPre3)
 
 plot.my.biz1 <-  function(data){
   print(ggplot(data, aes(as.POSIXct(Timestamp, origin="1970-01-01"), Price, colour=Currency)) +
@@ -50,13 +60,6 @@ plot.my.biz3 <-  function(data){
           theme_gdocs())
 }
 
-plot.my.biz1(coins)
-
-# Since beginning of 2017
-plot.my.biz1(coins[Timestamp >= 1483228800])
-plot.my.biz2(coins[Timestamp >= 1483228800])
-plot.my.biz3(coins[Timestamp >= 1483228800])
-
 lastTrade <- max(coins$Timestamp)
 lastTradeWeek <- lastTrade - 604800
 lastTrade60 <- lastTrade - 5184000
@@ -65,6 +68,13 @@ first2017Trade <- 1483228800
 first60d2017 <- 1483228800 + 5184000
 first90d2017 <- 1483228800 + 7776000
 first180d2017 <- 1483228800 + 15552000
+
+plot.my.biz1(coins)
+
+# Since beginning of 2017
+plot.my.biz1(coins[Timestamp >= 1483228800])
+plot.my.biz2(coins[Timestamp >= 1483228800])
+plot.my.biz3(coins[Timestamp >= 1483228800])
 
 plot.my.biz1(coins[Timestamp >= 1483228800])
 plot.my.biz1(coins[Timestamp >= lastTradeWeek])
@@ -95,10 +105,18 @@ plot.my.biz2(coins[Timestamp >= first2017Trade & Timestamp <= first180d2017])
 plot.my.biz3(coins[Timestamp >= first2017Trade & Timestamp <= first180d2017])
 ggsave("plotTest.pdf", plot = last_plot(), device = "pdf", path = "plots/")
 
-coins[, WeekDay := weekdays(as.POSIXct(Timestamp, origin="1970-01-01"))]
-coins$WeekDay <- factor(coins$WeekDay, levels= c("Sunday", "Monday", "Tuesday", 
-                                             "Wednesday", "Thursday", "Friday", "Saturday"))
+
 ggplot(coins, aes(WeekDay, Volume, colour = Currency)) +
   geom_bar(stat = "Identity")
-ggplot(coins, aes(WeekDay, Volume, colour = Currency)) +
+ggplot(coins[Currency == "Bitcoin" & Timestamp >= lastTrade180], aes(WeekDay, Volume)) +
   geom_point()
+
+ggplot(agrCoins, aes(WeekDay, MeanVolume, colour = Currency)) +
+  geom_point()
+ggplot(agrCoins, aes(WeekDay, MeanVolume, colour = Currency)) +
+  geom_point() +
+  geom_errorbar(aes(ymin = MeanVolume-SdVolume, ymax = MeanVolume+SdVolume, width = 0.25))
+
+ggplot(agrCoins[agrCoins$Currency == "Litecoin" | agrCoins$Currency == "Ethereum", ], aes(WeekDay, MeanPrice, colour = Currency)) +
+  geom_point() +
+  geom_errorbar(aes(ymin = MeanPrice-SdPrice, ymax = MeanPrice+SdPrice, width = 0.25))
