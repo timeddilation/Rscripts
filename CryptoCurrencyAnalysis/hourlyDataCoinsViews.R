@@ -27,20 +27,26 @@ coins <- coins[, MPrice := Price / max(Price), by = Currency]
 plot.my.biz1 <-  function(data){
   print(ggplot(data, aes(as.POSIXct(Timestamp, origin="1970-01-01"), Price, colour=Currency)) +
           geom_line() +
-          labs(title = "Raw Data", y = "Price") +
+          labs(title = "Raw Data", 
+               x = "Date",y = "Price") +
+          scale_color_manual(values = c("#FF9900", "#000000","#C0C0C0")) +
           theme_gdocs())
   
 }
 plot.my.biz2 <-  function(data){
   print(ggplot(data, aes(as.POSIXct(Timestamp, origin="1970-01-01"), ScaledPrice, colour=Currency)) +
           geom_line() +
-          labs(title = "Scaled Data", subtitle = "Default scale function", y = "Price") +
+          labs(title = "Scaled Data", subtitle = "Default scale function", 
+               x = "Date",y = "Price") +
+          scale_color_manual(values = c("#FF9900", "#000000","#C0C0C0")) +
           theme_gdocs())
 }
 plot.my.biz3 <-  function(data){  
   print(ggplot(data, aes(as.POSIXct(Timestamp, origin="1970-01-01"), MPrice, colour=Currency)) +
           geom_line() +
-          labs(title = "Scaled Data", subtitle = "Price / max(Price)", y = "Price") +
+          labs(title = "Scaled Data", subtitle = "Price / max(Price)", 
+               x = "Date",y = "Price") +
+          scale_color_manual(values = c("#FF9900", "#000000","#C0C0C0")) +
           theme_gdocs())
 }
 
@@ -88,3 +94,5 @@ plot.my.biz1(coins[Timestamp >= first2017Trade & Timestamp <= first180d2017])
 plot.my.biz2(coins[Timestamp >= first2017Trade & Timestamp <= first180d2017])
 plot.my.biz3(coins[Timestamp >= first2017Trade & Timestamp <= first180d2017])
 ggsave("plotTest.pdf", plot = last_plot(), device = "pdf", path = "plots/")
+
+print(coins)
