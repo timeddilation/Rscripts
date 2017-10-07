@@ -41,4 +41,6 @@ ggplot(sub2017.btc, aes(Date)) +
   geom_line(aes(y=scale(sub2017.btc$Close)), color = "blue")
 ggplot(sub2017.btc, aes(Date)) +
   geom_smooth(aes(y=scale(sub2017.btc$btc_hash_rate)), color = "red") +
-  geom_smooth(aes(y=scale(sub2017.btc$Close)), color = "blue")
+  geom_smooth(aes(y=scale(sub2017.btc$Close)), color = "blue") +
+  labs(x = "Some Thing") +
+  theme_classic()
