@@ -95,4 +95,10 @@ plot.my.biz2(coins[Timestamp >= first2017Trade & Timestamp <= first180d2017])
 plot.my.biz3(coins[Timestamp >= first2017Trade & Timestamp <= first180d2017])
 ggsave("plotTest.pdf", plot = last_plot(), device = "pdf", path = "plots/")
 
-print(coins)
+coins[, WeekDay := weekdays(as.POSIXct(Timestamp, origin="1970-01-01"))]
+coins$WeekDay <- factor(coins$WeekDay, levels= c("Sunday", "Monday", "Tuesday", 
+                                             "Wednesday", "Thursday", "Friday", "Saturday"))
+ggplot(coins, aes(WeekDay, Volume, colour = Currency)) +
+  geom_bar(stat = "Identity")
+ggplot(coins, aes(WeekDay, Volume, colour = Currency)) +
+  geom_point()
