@@ -5,57 +5,50 @@ library(ggplot2)
 library(grid)
 library(gridExtra)
 library(quantmod)
-library("ggthemes")
+library(ggthemes)
 
 bitcoin <- fread("HourlyData/vwapHourlyBTCUSD.csv")
+bitcoin <- bitcoin[, Currency := "Bitcoin"]
 bitcoin$Date <- NULL
-bitcoin$Volume <- NULL
-names(bitcoin) <- c("Timestamp", "BtcPrice")
 
 litecoin <- fread("HourlyData/vwapHourlyLTCUSD.csv")
+litecoin <- litecoin[, Currency := "Litecoin"]
 litecoin$Date <- NULL
-litecoin$Volume <- NULL
-names(litecoin) <- c("Timestamp", "LtcPrice")
 
 ethereum <- fread("HourlyData/vwapHourlyETHUSD.csv")
+ethereum <- ethereum[, Currency := "Ethereum"]
 ethereum$Date <- NULL
-ethereum$Volume <- NULL
-names(ethereum) <- c("Timestamp", "EtcPrice")
 
-coinsPre1 <- merge(bitcoin, litecoin, by= "Timestamp")
-coinsPre2 <- merge(coinsPre1, ethereum, by= "Timestamp")
-coins <- melt(coinsPre2, id="Timestamp")
-coins[, ScaledPrice := scale(value), by = variable]
-rm(coinsPre1, coinsPre2)
+coins <- rbind(bitcoin, litecoin, ethereum)
+coins <- coins[, ScaledPrice := scale(Price), by = Currency]
+coins <- coins[, MPrice := Price / max(Price), by = Currency]
 
 plot.my.biz1 <-  function(data){
-  print(ggplot(data, aes(Timestamp, value, colour=variable)) +
+  print(ggplot(data, aes(Timestamp, Price, colour=Currency)) +
           geom_line() +
           labs(title = "Raw Data", y = "Price") +
-          theme_hc())
+          theme_gdocs())
   
 }
 plot.my.biz2 <-  function(data){
-  print(ggplot(data, aes(Timestamp, ScaledPrice, colour=variable)) +
+  print(ggplot(data, aes(Timestamp, ScaledPrice, colour=Currency)) +
           geom_line() +
           labs(title = "Scaled Data", y = "Price") +
-          theme_hc())
+          theme_gdocs())
 }
 plot.my.biz3 <-  function(data){  
-  print(ggplot(data, aes(Timestamp, ScaledPrice, colour=variable)) +
-          geom_smooth() +
+  print(ggplot(data, aes(Timestamp, MPrice, colour=Currency)) +
+          geom_line() +
           labs(title = "Scaled Data", subtitle = "Smooth", y = "Price") +
-          theme_hc())
+          theme_gdocs())
 }
-
-coins2017 <- subset(coins, Timestamp >= 1483228800)
-coins2017 <- coins2017[, Scaled := scale(value), by = variable]
 
 plot.my.biz1(coins)
 
-plot.my.biz1(coins2017)
-plot.my.biz2(coins2017)
-plot.my.biz3(coins2017)
+# Since beginning of 2017
+plot.my.biz1(coins[Timestamp >= 1483228800])
+plot.my.biz2(coins[Timestamp >= 1483228800])
+plot.my.biz3(coins[Timestamp >= 1483228800])
 
 lastTrade <- max(coins$Timestamp)
 lastTradeWeek <- lastTrade - 604800
@@ -66,9 +59,13 @@ first60d2017 <- 1483228800 + 5184000
 first90d2017 <- 1483228800 + 7776000
 first180d2017 <- 1483228800 + 15552000
 
+plot.my.biz1(coins[Timestamp >= 1483228800])
 plot.my.biz1(coins[Timestamp >= lastTradeWeek])
+plot.my.biz1(coins[Timestamp >= lastTradeWeek & Currency == c("Litecoin", "Ethereum")])
 plot.my.biz2(coins[Timestamp >= lastTradeWeek])
-plot.my.biz3(coins[Timestamp >= lastTradeWeek])
+plot.my.biz3(coins[Timestamp >= lastTradeWeek & Currency == "Bitcoin"])
+plot.my.biz3(coins[Timestamp >= lastTradeWeek & Currency == c("Litecoin", "Ethereum")])
+
   
 plot.my.biz1(coins[Timestamp >= lastTrade60])
 plot.my.biz2(coins[Timestamp >= lastTrade60])
