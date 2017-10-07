@@ -34,7 +34,8 @@ coins[, Date := as.Date(Date, format="%b %d, %Y")]
 coins[, MonthYear := format(coins$Date, "%b %Y")]
 coins[, Volume := as.numeric(gsub(",", "", Volume))]
 coins[, AvgMntYrVolume := mean(Volume), by = MonthYear]
-names(coins) <- c("Date", "Open", "High", "Low", "Close", "Volume", "MarketCap", "currency", "MClose", "Scaled", "MonthYear", "AvgMntYrVolume")
+names(coins) <- c("Date", "Open", "High", "Low", "Close", "Volume", "MarketCap", 
+                  "currency", "MClose", "Scaled", "MonthYear", "AvgMntYrVolume")
 
 # coins[, Date := as.Date(Date, format="%Y %m, %d")]
 # coins2016 <- subset(coins, Date > as.Date("2016/01/01"))
@@ -52,8 +53,12 @@ coins[, Date := as.Date(Date, format="%Y %m, %d")]
 coins2017 <- subset(coins, Date > as.Date("2017/01/01"))
 coins[, Date := as.Date(Date, format="%b %d, %Y")]
 
+
 ggplot(coins2017, aes(Date, Close, color = currency)) +
   geom_line()
+ggplot(coins2017, aes(Date, log(Close), color = currency)) +
+  geom_line() +
+  geom_smooth()
 ggplot(coins2017, aes(Date, Scaled, color = currency)) +
   geom_smooth() +
   geom_line()
