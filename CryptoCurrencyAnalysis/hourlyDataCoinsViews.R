@@ -20,26 +20,27 @@ ethereum <- ethereum[, Currency := "Ethereum"]
 ethereum$Date <- NULL
 
 coins <- rbind(bitcoin, litecoin, ethereum)
+rm(bitcoin, litecoin, ethereum)
 coins <- coins[, ScaledPrice := scale(Price), by = Currency]
 coins <- coins[, MPrice := Price / max(Price), by = Currency]
 
 plot.my.biz1 <-  function(data){
-  print(ggplot(data, aes(Timestamp, Price, colour=Currency)) +
+  print(ggplot(data, aes(as.POSIXct(Timestamp, origin="1970-01-01"), Price, colour=Currency)) +
           geom_line() +
           labs(title = "Raw Data", y = "Price") +
           theme_gdocs())
   
 }
 plot.my.biz2 <-  function(data){
-  print(ggplot(data, aes(Timestamp, ScaledPrice, colour=Currency)) +
+  print(ggplot(data, aes(as.POSIXct(Timestamp, origin="1970-01-01"), ScaledPrice, colour=Currency)) +
           geom_line() +
-          labs(title = "Scaled Data", y = "Price") +
+          labs(title = "Scaled Data", subtitle = "Default scale function", y = "Price") +
           theme_gdocs())
 }
 plot.my.biz3 <-  function(data){  
-  print(ggplot(data, aes(Timestamp, MPrice, colour=Currency)) +
+  print(ggplot(data, aes(as.POSIXct(Timestamp, origin="1970-01-01"), MPrice, colour=Currency)) +
           geom_line() +
-          labs(title = "Scaled Data", subtitle = "Smooth", y = "Price") +
+          labs(title = "Scaled Data", subtitle = "Price / max(Price)", y = "Price") +
           theme_gdocs())
 }
 
