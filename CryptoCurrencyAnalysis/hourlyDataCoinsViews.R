@@ -120,3 +120,9 @@ ggplot(agrCoins, aes(WeekDay, MeanVolume, colour = Currency)) +
 ggplot(agrCoins[agrCoins$Currency == "Litecoin" | agrCoins$Currency == "Ethereum", ], aes(WeekDay, MeanPrice, colour = Currency)) +
   geom_point() +
   geom_errorbar(aes(ymin = MeanPrice-SdPrice, ymax = MeanPrice+SdPrice, width = 0.25))
+
+ggplot(coins[Timestamp >= lastTradeWeek & Currency == "Bitcoin"], 
+       aes(WeekDay, Price, colour = Currency)) +
+  geom_boxplot() +
+  geom_line()
+  
