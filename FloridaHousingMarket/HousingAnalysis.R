@@ -9,32 +9,12 @@ library(quantmod)
 library(ggthemes)
 
 market <- fread("Monthly.csv")
-market <- market[, Date := as.Date(market$Date, format = "%Y/%m/%d")]
-# market <- market[Date >= "2010/01/01"]
-market$Total <- market$Total * 1000
-market$NE <- market$NE * 1000
-market$MW <- market$MW * 1000
-market$S <- market$S * 1000
-market$W <- market$W * 1000
+market[, Date := as.Date(market$Date, format = "%Y/%m/%d")]
+names(market) <- c("Date", "Total", "NorthEast", "MideWest", "South", "West")
 
-marketPre1 <- market[, c("Date", "NE")]
-names(marketPre1) <- c("Date", "Closings")
-marketPre1 <- marketPre1[, Region := "NorthEast"]
-marketPre2 <- market[, c("Date", "MW")]
-names(marketPre2) <- c("Date", "Closings")
-marketPre2 <- marketPre2[, Region := "MidWest"]
-marketPre3 <- market[, c("Date", "S")]
-names(marketPre3) <- c("Date", "Closings")
-marketPre3 <- marketPre3[, Region := "South"]
-marketPre4 <- market[, c("Date", "W")]
-names(marketPre4) <- c("Date", "Closings")
-marketPre4 <- marketPre4[, Region := "West"]
-marketPre5 <- market[, c("Date", "Total")]
-names(marketPre5) <- c("Date", "Closings")
-marketPre5 <- marketPre5[, Region := "Total"]
-
-market <- rbind(marketPre1, marketPre2, marketPre3, marketPre4, marketPre5)
-rm(marketPre1, marketPre2, marketPre3, marketPre4, marketPre5)
+market <- melt(market, id.vars = "Date")
+names(market) <- c("Date", "Region", "Closings")
+market[, Closings := Closings * 1000]
 
 
 
